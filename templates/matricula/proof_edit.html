@@ -1,0 +1,18 @@
+{% extends 'matricula/base.html' %}
+{% block content %}
+{% load bootstrap5 %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+<h2>Novo Catequisando</h2>
+    <form method="POST" class="post-form"  enctype="multipart/form-data">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+          <button type="submit" class="btn btn-primary">
+            Enviar
+          </button>
+        {% endbuttons %}
+    </form>
+{% endblock %}

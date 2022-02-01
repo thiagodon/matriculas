@@ -4,6 +4,9 @@
 
 <div>
   <a class="btn btn-primary btn-lg btn-block" href="{% url 'catequisando' cpf %}">Adicionar Novo Catequisando</a>
+  {% if matriculas.count %}
+  <a class="btn btn-primary btn-lg btn-block" href="{% url 'proof_list' cpf %}">Comprovante de Pagamento</a>
+  {% endif %}
 </div>
 <table class="table">
   <thead>

@@ -26,4 +26,16 @@ class Matricula(models.Model):
     eucharist = models.ImageField(verbose_name="Foto Lembrança da Eucaristia", upload_to='documents/', blank=True)
 
     def __str__(self):
-        return f"{self.name} - {self.birth_date} "
+        return f"{self.name} - {self.birth_date}"
+
+class Proof(models.Model):
+    cpf = BRCPFField("CPF do responsável", max_length=20)
+    proof = models.FileField(verbose_name="Comprovante de Pagamento", upload_to='proofs/')
+
+
+    class Meta:
+        verbose_name = "Comprovante"
+        verbose_name_plural = "Comprovantes"
+
+    def __str__(self):
+        return f"{self.proof}"
