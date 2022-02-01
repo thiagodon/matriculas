@@ -1,0 +1,8 @@
+{% extends 'matricula/base.html' %}
+
+{% block content %}
+
+  <label class="form-control" for="cpf">Insira CPF do Responsável</label>
+  <input class="form-control" type="text" name="cpf" id="cpf"> <br>
+  <input class="form-control btn btn-primary btn-lg btn-block" type="button" name="Enviar" id="Enviar" value="Enviar" onclick="location.href='/cpf_validate/'+ document.getElementById('cpf').value;">
+{% endblock %}

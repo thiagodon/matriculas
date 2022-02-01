@@ -1,0 +1,38 @@
+{% extends 'matricula/base.html' %}
+
+{% block content %}
+
+<div>
+  <a class="btn btn-primary btn-lg btn-block" href="{% url 'catequisando' cpf %}">Adicionar Novo Catequisando</a>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Telefone</th>
+      <th>Email</th>
+      <th>Dt. Nasc.</th>
+      <th>cpf</th>
+      <th>Batizado</th>
+      <th>Eucaristia</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for matricula in matriculas %}
+    <tr>
+      <td>{{matricula.name}}</td>
+      <td>{{matricula.phone}}</td>
+      <td>{{matricula.email}}</td>
+      <td>{{matricula.birth_date}}</td>
+      <td>{{matricula.cpf}}</td>
+      <td>{% if matricula.baptized %} Sim {% else %} Não {% endif %}</td>
+      <td>{% if matricula.eucharisted %} Sim {% else %} Não {% endif %}</td>
+    </tr>
+    {% empty %}
+    <tr class="group">
+      <td colspan="7" class="text-center">Nenhum catequisando cadastrado</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
