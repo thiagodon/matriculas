@@ -7,6 +7,9 @@ authors = ["Thiago <thiago.costa@mateusmais.com>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 Django = "^4.0.1"
+django-localflavor = "^3.1"
+Pillow = "^9.0.0"
+django-bootstrap5 = "^21.3"
 
 [tool.poetry.dev-dependencies]
 
