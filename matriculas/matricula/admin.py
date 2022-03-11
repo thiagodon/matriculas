@@ -1,6 +1,10 @@
 from dataclasses import fields
 from django.contrib import admin
 from django.utils.html import format_html
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
+
+from matriculas.matricula.models import Catequista, Nivel, SubNivel, Turma
 
 # Register your models here.
 from .models import Matricula, Proof
@@ -18,11 +22,18 @@ from .models import Matricula, Proof
 #     formset = ProofInlineFormSet
 #     model = Proof
 #     extra = 0
-    
+class MatriculaResource(resources.ModelResource):
 
-class MatriculaAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Matricula
+        fields = ('name', )
+
+class MatriculaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    resource_class = MatriculaResource
+
     list_display = (
         "name",
+        "turma",
         "phone",
         "email",
         "birth_date",
@@ -35,9 +46,12 @@ class MatriculaAdmin(admin.ModelAdmin):
     )
     raw_id_fields = ("user",)
     search_fields = ['name', 'email', "cpf", "mother_name"]
+    list_filter = ('turma',)
+
     fieldsets = (
         (None, {
             "fields": (
+                    "turma",
                     "name",
                     "phone",
                     "email",
@@ -82,5 +96,131 @@ class ProofAdmin(admin.ModelAdmin):
     )
     search_fields = ['cpf',]
 
+class NivelAdmin(admin.ModelAdmin):
+    list_display = (
+        "order",
+        "name",
+    )
+    search_fields = ['name',]
+    fieldsets = (
+        (None, {
+            "fields": (
+                    "order",
+                    "name",
+            ),
+        }),
+    )
+
+class SubNivelAdmin(admin.ModelAdmin):
+    list_display = (
+        "order",
+        "nivel",
+        "name",
+        "idade",
+    )
+    search_fields = ['name', 'idade', ]
+    fieldsets = (
+        (None, {
+            "fields": (
+                    "order",
+                    "name",
+                    "idade",
+            ),
+        }),
+    )
+
+class CatequistaInline(admin.TabularInline):
+    model = Catequista
+    extra = 0
+
+class MatriculaInline(admin.TabularInline):
+    model = Matricula
+
+    fieldsets = (
+        (None, {
+            "fields": (
+                    "name",
+                    "phone",
+                    "email",
+                    "birth_date",
+                    "document",
+                    "cpf",
+                    "mother_name",
+                    "address",
+                    "last_class",
+                    "last_year",
+                    "baptized",
+                    "eucharisted",
+                    "baptism",
+                    "eucharist",
+            ),
+        }),
+    )
+    readonly_fields = (
+        "name",
+        "phone",
+        "email",
+        "birth_date",
+        "document",
+        "cpf",
+        "mother_name",
+        "address",
+        "last_class",
+        "last_year",
+        "baptized",
+        "eucharisted",
+        "baptism",
+        "eucharist",
+    )
+
+    def has_udpate_permission(self, request, obj=None):
+        return False
+
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+class TurmaAdmin(admin.ModelAdmin):
+    inlines = [CatequistaInline, MatriculaInline,]
+    list_display = (
+        "nivel",
+        "local",
+        "dia",
+        "horario",
+        "sala",
+    )
+    search_fields = ['nivel', 'local', 'dia', 'horario', 'sala']
+    fieldsets = (
+        (None, {
+            "fields": (
+                "nivel",
+                "local",
+                "dia",
+                "horario",
+                "sala",
+            ),
+        }),
+    )
+
+class CatequistaAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+    )
+    search_fields = ['name',]
+    fieldsets = (
+        (None, {
+            "fields": (
+                    "name",
+            ),
+        }),
+    )
+
 admin.site.register(Matricula, MatriculaAdmin)
 admin.site.register(Proof, ProofAdmin)
+admin.site.register(Nivel, NivelAdmin)
+admin.site.register(SubNivel, SubNivelAdmin)
+admin.site.register(Turma, TurmaAdmin)
+admin.site.register(Catequista, CatequistaAdmin)

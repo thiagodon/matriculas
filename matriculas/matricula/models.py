@@ -5,8 +5,77 @@ from localflavor.br.models import BRCPFField
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
+class Nivel(models.Model):
+    order = models.IntegerField("Ordem", default=0)
+    name = models.CharField('Nome', max_length=300)
+
+    class Meta:
+        verbose_name = "Nível Maior"
+        verbose_name_plural = "Níveis Maiores"
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.name}"
+
+class SubNivel(models.Model):
+    order = models.IntegerField("Ordem", default=0)
+    nivel = models.ForeignKey("matricula.Nivel", on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField('Nome', max_length=300)
+    idade = models.IntegerField("Idade Mìnima", default=0)
+
+    class Meta:
+        verbose_name = "Nível"
+        verbose_name_plural = "Níveis"
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.name}"
+
+class Turma(models.Model):
+    LOCAL_CHOICES = (
+        ("matriz", "Matriz"),
+        ("miguel", "São Miguel"),
+        ("pedro", "São Pedro"),
+        ("bom", "Bom Jesus"),
+        ("guadalupe", "Guadalupe")
+    )
+    DAY_CHOICES = (
+        ("domingo", "Domingo"),
+        ("sábado", "Sábado")
+    )
+    HOUR_CHOICES = (
+        ("8", "08:00H"),
+        ("15", "15:00H"),
+        ("16", "16:00H"),
+        ("17", "17:00H"),
+    )
+    nivel = models.ForeignKey("matricula.SubNivel", on_delete=models.CASCADE, null=True, blank=True)
+    local = models.CharField('Local', choices=LOCAL_CHOICES, max_length=300)
+    dia = models.CharField('Dia', choices=DAY_CHOICES, max_length=300)
+    horario = models.CharField('Horário', choices=HOUR_CHOICES, max_length=300)
+    sala = models.IntegerField("Ordem", default=0)
+
+    class Meta:
+        verbose_name = "Turma"
+        verbose_name_plural = "Turma"
+
+    def __str__(self):
+        return f"{self.nivel.name} - {self.get_local_display()} - {self.get_dia_display()} - {self.get_horario_display()}"
+
+class Catequista(models.Model):
+    turma = models.ForeignKey("matricula.Turma", on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField('Nome completo', max_length=300)
+
+    class Meta:
+        verbose_name = "Catequista"
+        verbose_name_plural = "Catequista"
+
+    def __str__(self):
+        return f"{self.name} - {self.turma}"
+
 class Matricula(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    turma = models.ForeignKey("matricula.Turma", on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField('Nome compeleto', max_length=300)
     phone = models.CharField("Telefone", max_length=20, blank=True)
     email = models.EmailField("Email")
