@@ -1,4 +1,6 @@
 from dataclasses import fields
+from django.utils import timezone
+from datetime import timedelta, datetime
 from django.contrib import admin
 from django.utils.html import format_html
 from import_export import resources
@@ -123,11 +125,42 @@ class SubNivelAdmin(admin.ModelAdmin):
         (None, {
             "fields": (
                     "order",
+                    "nivel",
                     "name",
                     "idade",
             ),
         }),
     )
+    actions = ['create_turma', ]
+
+    def create_turma(self, request, queryset):
+        for nivel in queryset:
+            turmas = Turma.objects.filter(nivel=nivel)
+            
+            if not turmas.exists():
+                return
+
+            str_date_refence_start = f"{str(timezone.now().year-nivel.idade-1)}-07-31"
+            str_date_refence_end = f"{str(timezone.now().year-nivel.idade)}-07-31"
+            start_date = datetime.strptime(str_date_refence_start, '%Y-%m-%d').date()
+            end_date = datetime.strptime(str_date_refence_end, '%Y-%m-%d').date()
+            if nivel.id==10:
+                matriculas = Matricula.objects.filter(birth_date__lte=end_date)
+            else:
+                matriculas = Matricula.objects.filter(birth_date__range=(start_date, end_date))
+            
+            while len(matriculas):
+                for turma in turmas:
+                    if len(matriculas):
+                        matricula = matriculas.first()
+                        matricula.turma = turma
+                        matricula.save()
+                        matriculas = matriculas.exclude(id=matricula.id)
+                    else:
+                        break
+
+ 
+    create_turma.short_description = 'Dividir Turmas'
 
 class CatequistaInline(admin.TabularInline):
     model = Catequista

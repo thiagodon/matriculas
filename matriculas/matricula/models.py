@@ -41,7 +41,7 @@ class Turma(models.Model):
     )
     DAY_CHOICES = (
         ("domingo", "Domingo"),
-        ("sábado", "Sábado")
+        ("sabado", "Sábado")
     )
     HOUR_CHOICES = (
         ("8", "08:00H"),
