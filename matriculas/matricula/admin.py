@@ -220,6 +220,7 @@ class TurmaAdmin(admin.ModelAdmin):
     inlines = [CatequistaInline, MatriculaInline,]
     list_display = (
         "nivel",
+        "catequistas",
         "local",
         "dia",
         "horario",
@@ -237,6 +238,9 @@ class TurmaAdmin(admin.ModelAdmin):
             ),
         }),
     )
+    
+    def catequistas(self, obj):
+        return [catatequista.name for catatequista in obj.catequista_set.all()]
 
 class CatequistaAdmin(admin.ModelAdmin):
     list_display = (
