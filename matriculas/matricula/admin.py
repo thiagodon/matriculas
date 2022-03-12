@@ -149,6 +149,10 @@ class SubNivelAdmin(admin.ModelAdmin):
             end_date = datetime.strptime(str_date_refence_end, '%Y-%m-%d').date()
             if nivel.id==10:
                 matriculas = Matricula.objects.filter(birth_date__lte=end_date, turma__isnull=True)
+            elif nivel.id==9:
+                str_date_refence_end = f"{str(timezone.now().year-(nivel.idade+2))}-07-31"
+                end_date = datetime.strptime(str_date_refence_end, '%Y-%m-%d').date()
+                matriculas = Matricula.objects.filter(birth_date__range=(start_date, end_date), turma__isnull=True)
             else:
                 matriculas = Matricula.objects.filter(birth_date__range=(start_date, end_date), turma__isnull=True)
             
@@ -224,6 +228,7 @@ class TurmaAdmin(admin.ModelAdmin):
     list_display = (
         "nivel",
         "catequistas",
+        "catequizandos",
         "local",
         "dia",
         "horario",
@@ -244,6 +249,10 @@ class TurmaAdmin(admin.ModelAdmin):
     
     def catequistas(self, obj):
         return [catatequista.name for catatequista in obj.catequista_set.all()]
+
+    def catequizandos(self, obj):
+        return obj.matricula_set.all().count()
+
 
 class CatequistaAdmin(admin.ModelAdmin):
     list_display = (

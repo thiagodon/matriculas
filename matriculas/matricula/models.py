@@ -29,7 +29,7 @@ class SubNivel(models.Model):
         ordering = ['order']
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.name} (idade: {self.idade})"
 
 class Turma(models.Model):
     LOCAL_CHOICES = (
@@ -41,7 +41,7 @@ class Turma(models.Model):
     )
     DAY_CHOICES = (
         ("domingo", "Domingo"),
-        ("sabado", "Sábado")
+        ("sábado", "Sábado")
     )
     HOUR_CHOICES = (
         ("8", "08:00H"),
@@ -53,14 +53,15 @@ class Turma(models.Model):
     local = models.CharField('Local', choices=LOCAL_CHOICES, max_length=300)
     dia = models.CharField('Dia', choices=DAY_CHOICES, max_length=300)
     horario = models.CharField('Horário', choices=HOUR_CHOICES, max_length=300)
-    sala = models.IntegerField("Ordem", default=0)
+    sala = models.IntegerField("Sala", default=0)
 
     class Meta:
         verbose_name = "Turma"
         verbose_name_plural = "Turma"
+        ordering = ['nivel__order',]
 
     def __str__(self):
-        return f"{self.nivel.name} - {self.get_local_display()} - {self.get_dia_display()} - {self.get_horario_display()}"
+        return f"({self.matricula_set.all().count()}) {self.nivel.name} - {[catatequista.name for catatequista in self.catequista_set.all()]} - {self.get_local_display()} - {self.get_dia_display()} - {self.get_horario_display()}"
 
 class Catequista(models.Model):
     turma = models.ForeignKey("matricula.Turma", on_delete=models.CASCADE, null=True, blank=True)
