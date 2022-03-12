@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
+from django.db import models
 
 from matriculas.matricula.models import Catequista, Nivel, SubNivel, Turma
 
@@ -135,7 +136,9 @@ class SubNivelAdmin(admin.ModelAdmin):
 
     def create_turma(self, request, queryset):
         for nivel in queryset:
-            turmas = Turma.objects.filter(nivel=nivel)
+            turmas = Turma.objects.annotate(
+                count=models.Count("matricula")
+            ).filter(nivel=nivel).order_by('count')
             
             if not turmas.exists():
                 return
@@ -145,9 +148,9 @@ class SubNivelAdmin(admin.ModelAdmin):
             start_date = datetime.strptime(str_date_refence_start, '%Y-%m-%d').date()
             end_date = datetime.strptime(str_date_refence_end, '%Y-%m-%d').date()
             if nivel.id==10:
-                matriculas = Matricula.objects.filter(birth_date__lte=end_date)
+                matriculas = Matricula.objects.filter(birth_date__lte=end_date, turma__isnull=True)
             else:
-                matriculas = Matricula.objects.filter(birth_date__range=(start_date, end_date))
+                matriculas = Matricula.objects.filter(birth_date__range=(start_date, end_date), turma__isnull=True)
             
             while len(matriculas):
                 for turma in turmas:
