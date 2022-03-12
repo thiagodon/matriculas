@@ -150,7 +150,7 @@ class SubNivelAdmin(admin.ModelAdmin):
             if nivel.id==10:
                 matriculas = Matricula.objects.filter(birth_date__lte=end_date, turma__isnull=True)
             elif nivel.id==9:
-                str_date_refence_start = f"{str(timezone.now().year-(nivel.idade+2))}-07-31"
+                str_date_refence_start = f"{str(timezone.now().year-(nivel.idade+3))}-07-31"
                 start_date = datetime.strptime(str_date_refence_start, '%Y-%m-%d').date()
                 matriculas = Matricula.objects.filter(birth_date__range=(start_date, end_date), turma__isnull=True)
             else:
